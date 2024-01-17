@@ -28,14 +28,18 @@ export default function Home() {
     setIsClient(true)
   }, [])
 
-  const authenticate = () => {
+  const logIn = () => {
     signIn().then(setUser);
+  }
+
+  const logOut = () => {
+    signOut().then(() => setUser(defaultUser));
   }
 
   useEffect(() => {
     if (token) {
       if (user.id === null) {
-        authenticate();
+        logIn();
       }
       fetchUsers().then(setCoworkers);
     }
@@ -49,20 +53,20 @@ export default function Home() {
         <div className="flex justify-between w-1/3 p-6 bg-white border border-gray-200 rounded-md shadow dark:border-gray-700">
           <div>
             <h1>{token ? `Welcome, ${user.name}` : 'Welcome, please sign in.'}</h1>
-            {user.workplace.length ? <p>Company: {user.workplace[0]}</p> : null}
-            {user.job.length ? <p>Position: {user.job[0]}</p> : null}
+            {user.workplace.length ? <p data-testid="company">Company: {user.workplace[0]}</p> : null}
+            {user.job.length ? <p data-testid="position">Position: {user.job[0]}</p> : null}
           </div>
         </div>
         {token ? (
-          <button className="h-10 pr-4 pl-4 rounded-md bg-red-500"  onClick={() => signOut().then(() => setUser(defaultUser))}>Sign Out</button>
+          <button className="h-10 pr-4 pl-4 rounded-md bg-red-500"  onClick={logOut}>Sign Out</button>
         ) : (
-          <button className="h-10 pr-4 pl-4 rounded-md bg-green-500" onClick={authenticate}>Sign In</button>
+          <button className="h-10 pr-4 pl-4 rounded-md bg-green-500" onClick={logIn}>Sign In</button>
         )}
       </header>
       {token && (
-        <section className="p-2">
+        <section data-testid="coworkers-section" className="p-2">
           <h2 className="text-xl font-bold">Coworkers</h2>
-          <ul>
+          <ul data-testid="coworkers-list">
             {coworkers.map((user) => (
               <li key={user.id}>{user.name}</li>
             ))}
