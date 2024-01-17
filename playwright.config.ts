@@ -4,7 +4,7 @@ import { defineConfig, devices } from '@playwright/test'
  * See https://playwright.dev/docs/test-configuration.
  */
 // Change this to your dev URL
-const devURL = 'https://danielstclair.github.io/playwright-workshop'
+const devURL = 'https://danielstclair.github.io'
 const localURL = 'http://localhost:3000'
 export default defineConfig({
   testDir: './playwright/tests',
@@ -34,6 +34,7 @@ export default defineConfig({
     },
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: process.env.CI ? devURL : localURL,
+    // baseURL: devURL,
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry'
   },

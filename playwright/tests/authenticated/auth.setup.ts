@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test } from "../../helpers/test";
 
 type SameSite = 'Strict' | 'Lax' | 'None';
 const domain = process.env.CI ? 'danielstclair.github.io' : 'localhost';
@@ -14,8 +14,8 @@ const testCookie = {
   sameSite: 'Lax' as SameSite,
 };
 
-test('setups up auth by logging in', async ({ page }) => {
-  await page.goto('/');
+test('setups up auth by logging in', async ({ page, rootURL }) => {
+  await page.goto(rootURL);
   const signInButton = page.getByRole('button', { name: 'Sign In' })
   await signInButton.click();
   await page.context().addCookies([testCookie]);

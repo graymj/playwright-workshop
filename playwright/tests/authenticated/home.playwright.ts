@@ -1,22 +1,25 @@
-import { test, expect, Page } from '@playwright/test';
+import { test } from '../../helpers/test';
+import { expect } from '@playwright/test';
 import { wait } from '../../helpers/timer';
 
 
 test.describe('authenticated home page', () => {
-  test('shows user info when logged in', async ({ page }) => {
+  test('shows user info when logged in', async ({ page, rootURL }) => {
     test.setTimeout(10000);
-    await page.goto('/');
+    console.log({ rootURL })
+    await page.goto(rootURL);
+    await wait(1000);
     const signOutButton = page.getByRole('button', { name: 'Sign Out' })
     expect(signOutButton).toBeVisible({ timeout: 10000 });
     expect(page.getByText('Welcome, Michael Scott')).toBeVisible();
     expect(page.getByTestId('company')).toBeVisible();
     expect(page.getByTestId('position')).toBeVisible();
   });
-  test('shows coworkers when logged in', async ({ page }) => {
+  test('shows coworkers when logged in', async ({ page, rootURL }) => {
     test.setTimeout(10000);
-    await page.goto('/');
+    await page.goto(rootURL);
 
-    await wait(2000);
+    await wait(1000);
     const signOutButton = page.getByRole('button', { name: 'Sign Out' })
     expect(signOutButton).toBeVisible({ timeout: 10000 });
     expect(page.getByText('Welcome, Michael Scott')).toBeVisible();
@@ -25,10 +28,10 @@ test.describe('authenticated home page', () => {
     expect(coworkerSection.getByText('Coworkers')).toBeVisible();
     expect(coworkerSection.getByText('Dwight Schrute')).toBeVisible({ timeout: 10000 });
   });
-  test('can sign out', async ({ page }) => {
+  test('can sign out', async ({ page, rootURL }) => {
     test.setTimeout(10000);
-    await page.goto('/');
-    await wait(2000);
+    await page.goto(rootURL);
+    await wait(1000);
     const signOutButton = page.getByRole('button', { name: 'Sign Out' })
     expect(signOutButton).toBeVisible({ timeout: 10000 });
     const coworkersSection = page.getByTestId('coworkers-section');
@@ -36,7 +39,7 @@ test.describe('authenticated home page', () => {
     const dwightSchrute = coworkersSection.getByText('Dwight Schrute');
     expect(dwightSchrute).toBeVisible();
     await signOutButton.click();
-    await wait(2000);
+    await wait(1000);
 
     const signInButton = page.getByRole('button', { name: 'Sign In' })
     expect(signInButton).toBeVisible();

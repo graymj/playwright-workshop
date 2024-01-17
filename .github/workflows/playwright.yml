@@ -1,0 +1,158 @@
+name: Playwright Tests
+
+on:
+  push:
+    branches:
+      - 06-add-gha
+  schedule:
+    - cron: "* 8-15/4 * * *"
+  workflow_dispatch:
+
+env:
+  # NPM_TOKEN: ${{ secrets.FAVOR_NPM_TOKEN_RO }}
+  CI: true
+
+defaults:
+  run:
+    shell: bash
+jobs:
+  playwright:
+    name: "Playwright Tests"
+    runs-on: ubuntu-latest
+    env:
+      JOB_NAME: "Playwright Tests"
+      GITHUB_URL: "https://github.com/danielstclair/playwright-workshop"
+      # ADD RELEVANT SLACK WEBHOOK URL
+      # SLACK_WEBHOOK_URL: REPLACE_ME # EXAMPLE secrets.FAVOR_ACTIONS_DEVEX_AUTOMATION_NOTIFY_SLACK_WEBHOOK_URL
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Environment Setup - Run
+        id: run
+        run: |
+          echo "number=${{ github.run_number }}" >> $GITHUB_OUTPUT
+          echo "url=${{ env.GITHUB_URL }}/actions/runs/${{ github.run_id }}" >> $GITHUB_OUTPUT
+
+      - name: Install Dependencies
+        id: install-test
+        run: npm ci
+
+      - name: Playwright install
+        id: playwright-install
+        run: npx playwright install --with-deps chromium
+        shell: bash
+
+      - name: Run your tests
+        run: npm run playwright
+
+      - name: Upload playwright html report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-html-report
+          path: ./playwright-report/*
+          retention-days: 30
+
+      - name: Upload playwright json report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-json-report
+          path: ./summary.json
+          retention-days: 30
+
+      # - name: Parse Summary
+      #   id: parse-summary
+      #   if: always()
+      #   working-directory: ./app
+      #   run: |
+      #     result=$(cat ./summary.json)
+      #     echo "status=$(echo $result | jq -r '.status')" >> $GITHUB_OUTPUT
+      #     echo "passed_count=$(echo $result | jq -r '.passed_count')" >> $GITHUB_OUTPUT
+      #     echo "failed_count=$(echo $result | jq -r '.failed_count')" >> $GITHUB_OUTPUT
+      #     echo "flakey_count=$(echo $result | jq -r '.flakey_count')" >> $GITHUB_OUTPUT
+      #     echo "skipped_count=$(echo $result | jq -r '.skipped_count')" >> $GITHUB_OUTPUT
+      #     echo "emoji=$(echo $result | jq -r '.emoji')" >> $GITHUB_OUTPUT
+      #     echo "passed_tests=$(echo $result | jq -r '.passed_tests')" >> $GITHUB_OUTPUT
+      #     echo "failed_tests=$(echo $result | jq -r '.failed_tests')" >> $GITHUB_OUTPUT
+      #     echo "flakey_tests=$(echo $result | jq -r '.flakey_tests')" >> $GITHUB_OUTPUT
+      #     echo "skipped_tests=$(echo $result | jq -r '.skipped_tests')" >> $GITHUB_OUTPUT
+
+      # - name: Environment Setup - Slack Content
+      #   id: content
+      #   if: always()
+      #   run: |
+      #     echo "header=${{ steps.parse-summary.outputs.emoji }} ${{ env.JOB_NAME }} - #${{ steps.run.outputs.number }} ${{ steps.parse-summary.outputs.status }}" >> $GITHUB_OUTPUT
+      #     echo "passed=*:xcresult_passed: Passed:* \`${{ steps.parse-summary.outputs.passed_count }}\`" >> $GITHUB_OUTPUT
+      #     echo "failed=*:xcresult_failed: Failed:* \`${{ steps.parse-summary.outputs.failed_count }}\`" >> $GITHUB_OUTPUT
+      #     echo "skipped=*:xcresult_skipped: Skipped:* \`${{ steps.parse-summary.outputs.skipped_count }}\`" >> $GITHUB_OUTPUT
+      #     echo "flakey=*:snowflake: Flakey:* \`${{ steps.parse-summary.outputs.flakey_count }}\`" >> $GITHUB_OUTPUT
+
+      # # Outputs:
+      # #   push_notification.text: The text to use in the body of notifications triggered by the Slack post. When using BlockKit, the "text" property becomes fallback for push. Ex. :github_actions_x: Consumer B-DEV - #191 Failed (DEVOPS-1056)
+      # - name: Environment Setup - Push Notification Text
+      #   id: push_notification
+      #   if: always()
+      #   run: |
+      #     echo "text=${{ env.JOB_NAME }} - #${{ steps.run.outputs.number }} ${{ steps.parse-summary.outputs.status }} (${{ github.ref_name }})" >> $GITHUB_OUTPUT
+
+      # - name: Send Slack Test Results
+      #   if: always()
+      #   uses: slackapi/slack-github-action@v1.19.0
+      #   env:
+      #     SLACK_WEBHOOK_URL: ${{ env.SLACK_WEBHOOK_URL }}
+      #     SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+      #   with:
+      #     payload: |
+      #       {
+      #         "blocks": [
+      #           {
+      #             "type": "header",
+      #             "text": {
+      #               "type": "plain_text",
+      #               "text": "${{ steps.content.outputs.header }}"
+      #             }
+      #           },
+      #           {
+      #             "type": "context",
+      #             "elements": [
+      #               {
+      #                 "type": "mrkdwn",
+      #                 "text": "${{ steps.content.outputs.passed }}"
+      #               },
+      #               {
+      #                 "type": "mrkdwn",
+      #                 "text": "${{ steps.content.outputs.failed }}"
+      #               },
+      #               {
+      #                 "type": "mrkdwn",
+      #                 "text": "${{ steps.content.outputs.skipped }}"
+      #               }
+      #             ]
+      #           },
+      #           {
+      #             "type": "section",
+      #             "text": {
+      #               "type": "mrkdwn",
+      #               "text": "*Passed tests*: \n ${{ steps.parse-summary.outputs.passed_tests }} \n *Failed tests*: \n ${{ steps.parse-summary.outputs.failed_tests }} \n *Flakey tests*: \n ${{ steps.parse-summary.outputs.flakey_tests }} \n *Skipped tests*: \n ${{ steps.parse-summary.outputs.skipped_tests }}"
+      #             }
+      #           },
+      #           {
+      #             "type": "actions",
+      #             "block_id": "random-id",
+      #             "elements": [
+      #               {
+      #                 "type": "button",
+      #                 "text": {
+      #                   "type": "plain_text",
+      #                   "text": "Build Results"
+      #                 },
+      #                 "url": "${{ steps.run.outputs.url }}"
+      #               }
+      #             ]
+      #           }
+      #         ]
+      #       }
