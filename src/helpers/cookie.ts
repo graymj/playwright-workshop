@@ -12,12 +12,8 @@ export function getCookie (key: string) {
   const cookies = document?.cookie.split(';')
   const foundCookie = cookies.find((cookie) => cookie.trim().startsWith(`${key}=`))
   if (!foundCookie) return null
-  const [, value] = foundCookie.split('=')
-  return value
-}
-
-export function parseCookies (cookies: string | undefined) {
-  return parse(cookies || '')
+  const parsedCookie = parse(foundCookie)
+  return parsedCookie[key]
 }
 
 export function removeCookie (key: string) {

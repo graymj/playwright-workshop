@@ -52,10 +52,17 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     // Setup project
+    { name: 'setup', testMatch: /.*\.setup\.ts/ },
     {
-      name: 'chromium',
+      name: 'logged in chromium',
+      use: { ...devices['Desktop Chrome'], storageState: './playwright/.auth/auth.json' },
+      dependencies: ['setup'],
+      testIgnore: 'playwright/tests/unauthenticated/**',
+    },
+    {
+      name: 'logged out chromium',
       use: { ...devices['Desktop Chrome'] },
-      testMatch: /.*\.playwright\.ts/,
+      testMatch: 'playwright/tests/unauthenticated/**',
     }
   ]
 })
