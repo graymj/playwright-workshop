@@ -20,6 +20,7 @@ test('setups up auth by logging in', async ({ page, rootURL, mock }) => {
   await mock.route({ outputFile: `home/auth.har`, url: '**/api/**' })
 
   await page.goto(rootURL);
+  await wait(1000)
   const signInButton = page.getByRole('button', { name: 'Sign In' })
   await signInButton.click();
   page.getByText('Welcome, Michael Scott').isVisible();

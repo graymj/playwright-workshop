@@ -9,6 +9,7 @@ test.describe('authenticated home page', () => {
     test.setTimeout(10000);
     await mock.route({ outputFile: `home/home.har`, url: '**/api/**' })
     await page.goto(rootURL);
+    await wait(1000)
     const signOutButton = page.getByRole('button', { name: 'Sign Out' })
     expect(signOutButton).toBeVisible({ timeout: 10000 });
     expect(page.getByText('Welcome, Michael Scott')).toBeVisible();
@@ -20,6 +21,7 @@ test.describe('authenticated home page', () => {
     test.setTimeout(10000);
     await mock.route({ outputFile: `home/home.har`, url: '**/api/**' })
     await page.goto(rootURL);
+    await wait(1000)
 
     const signOutButton = page.getByRole('button', { name: 'Sign Out' })
     expect(signOutButton).toBeVisible({ timeout: 10000 });
@@ -34,6 +36,7 @@ test.describe('authenticated home page', () => {
     test.setTimeout(10000);
     await mock.route({ outputFile: `home/home.har`, url: '**/api/**' })
     await page.goto(rootURL);
+    await wait(1000)
     const signOutButton = page.getByRole('button', { name: 'Sign Out' })
     expect(signOutButton).toBeVisible({ timeout: 10000 });
     const coworkersSection = page.getByTestId('coworkers-section');
