@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "playwright": "playwright test"
   },
   "dependencies": {
     "cookie": "^0.6.0",
@@ -16,6 +17,7 @@
     "universal-cookie": "^7.0.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.41.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
