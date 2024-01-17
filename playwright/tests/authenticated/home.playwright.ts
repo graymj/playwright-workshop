@@ -1,11 +1,16 @@
 import { test } from '../../helpers/test';
 import { expect } from '@playwright/test';
 import { wait } from '../../helpers/timer';
+import { MOCK_DIR } from '../../helpers/mock';
 
 
 test.describe('authenticated home page', () => {
   test('shows user info when logged in', async ({ page, rootURL }) => {
     test.setTimeout(10000);
+    await page.routeFromHAR(`${MOCK_DIR}/home/home.har`, {
+      url: '**/api/**',
+      update: false
+    })
     console.log({ rootURL })
     await page.goto(rootURL);
     await wait(1000);
@@ -17,6 +22,10 @@ test.describe('authenticated home page', () => {
   });
   test('shows coworkers when logged in', async ({ page, rootURL }) => {
     test.setTimeout(10000);
+    await page.routeFromHAR(`${MOCK_DIR}/home/home.har`, {
+      url: '**/api/**',
+      update: false
+    })
     await page.goto(rootURL);
 
     await wait(1000);
@@ -30,6 +39,10 @@ test.describe('authenticated home page', () => {
   });
   test('can sign out', async ({ page, rootURL }) => {
     test.setTimeout(10000);
+    await page.routeFromHAR(`${MOCK_DIR}/home/home.har`, {
+      url: '**/api/**',
+      update: false
+    })
     await page.goto(rootURL);
     await wait(1000);
     const signOutButton = page.getByRole('button', { name: 'Sign Out' })

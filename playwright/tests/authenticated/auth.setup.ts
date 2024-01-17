@@ -1,4 +1,5 @@
 import { test } from "../../helpers/test";
+import { MOCK_DIR } from "../../helpers/mock";
 
 type SameSite = 'Strict' | 'Lax' | 'None';
 const domain = process.env.CI ? 'danielstclair.github.io' : 'localhost';
@@ -15,6 +16,10 @@ const testCookie = {
 };
 
 test('setups up auth by logging in', async ({ page, rootURL }) => {
+  await page.routeFromHAR(`${MOCK_DIR}/home/auth.har`, {
+    url: '**/api/**',
+    update: false
+  })
   await page.goto(rootURL);
   const signInButton = page.getByRole('button', { name: 'Sign In' })
   await signInButton.click();
