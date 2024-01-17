@@ -1,5 +1,6 @@
 import { test } from "../../helpers/test";
 import { MOCK_DIR } from "../../helpers/mock";
+import { wait } from "../../helpers/timer";
 
 type SameSite = 'Strict' | 'Lax' | 'None';
 const domain = process.env.CI ? 'danielstclair.github.io' : 'localhost';
@@ -15,14 +16,14 @@ const testCookie = {
   sameSite: 'Lax' as SameSite,
 };
 
-test('setups up auth by logging in', async ({ page, rootURL }) => {
-  await page.routeFromHAR(`${MOCK_DIR}/home/auth.har`, {
-    url: '**/api/**',
-    update: false
-  })
+test('setups up auth by logging in', async ({ page, rootURL, mock }) => {
+  await mock.route({ outputFile: `home/auth.har`, url: '**/api/**' })
+
   await page.goto(rootURL);
   const signInButton = page.getByRole('button', { name: 'Sign In' })
   await signInButton.click();
+  page.getByText('Welcome, Michael Scott').isVisible();
   await page.context().addCookies([testCookie]);
   await page.context().storageState({ path: './playwright/.auth/auth.json' })
+  await wait(2000);
 })
