@@ -58,7 +58,7 @@ export default function Home() {
           </div>
         </div>
         {token ? (
-          <button className="h-10 pr-4 pl-4 rounded-md bg-red-500"  onClick={logOut}>Sign Out</button>
+          <button className="h-10 pr-4 pl-4 rounded-md bg-red-500" onClick={logOut}>Sign Out</button>
         ) : (
           <button className="h-10 pr-4 pl-4 rounded-md bg-green-500" onClick={logIn}>Sign In</button>
         )}
